@@ -1,0 +1,12 @@
+namespace: eval 
+commonLabels:
+  app: webserver
+  owner: nitish
+
+resources:
+- deployment.yaml
+- service.yaml
+- hpa.yaml
+- metric-template.yaml
+- gateway.yaml
+- canary.yaml

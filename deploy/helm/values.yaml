@@ -1,0 +1,49 @@
+appName: webserver
+
+hpa:
+  replicas:
+    min: 2
+    max: 6
+  cpu: 80
+
+webserver:
+  container:
+    image: nmalhotr/webserver
+    version: v1.0.0
+    name: webserver
+    repository: ""
+    port: 8080
+    portName: http-server
+  service:
+    host: webserver.com
+    port: 80
+    portName: http-server
+    nodePort: 32220
+    type: NodePort
+
+  resources:
+    limits:
+      memory: "128Mi"
+      cpu: "500m"
+
+canary:
+  retries: 3
+  gateway: ingressgateway.istio-system.svc.cluster.local
+  analysis:
+    prometheus:
+      address: http://prometheus.istio-system:9090
+    interval: 1m
+    threshold: 5
+    maxWeight: 50
+    stepWeight: 10
+    metrics:
+      errorPercentage:
+        interval: 1m
+        threshold: 10
+        name: errorpercentage
+        query: sum(rate(webserver_errors{instance="webserver-canary.eval.svc.cluster.local:80"}[{{ interval }}])) / sum(rate(webserver_requests{instance="webserver-canary.eval.svc.cluster.local:80"}[{{ interval }}])) * 100 or on() vector(0)
+      p90Latency:  
+        interval: 1m
+        threshold: 0.15
+        name: p90latency
+        query: histogram_quantile(0.99, rate(webserver_request_duration_seconds_bucket{instance="webserver-canary.eval.svc.cluster.local:80"}[{{ interval }}])) > 0.02 and rate(webserver_request_duration_seconds_count{instance="webserver-canary.eval.svc.cluster.local:80"}[{{ interval }}]) > 1 or on() vector(0)

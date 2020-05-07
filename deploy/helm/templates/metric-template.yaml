@@ -1,0 +1,23 @@
+apiVersion: flagger.app/v1beta1
+kind: MetricTemplate
+metadata:
+  name: {{ .Values.canary.analysis.metrics.errorPercentage.name }} 
+  namespace: {{ .Release.Namespace }}
+spec:
+  provider:
+    type: prometheus
+    address: {{ .Values.canary.analysis.prometheus.address }}
+  query: {{ .Values.canary.analysis.metrics.errorPercentage.query }}
+
+---
+apiVersion: flagger.app/v1beta1
+kind: MetricTemplate
+metadata:
+  name: {{ .Values.canary.analysis.metrics.p90Latency.name }}  
+  namespace: {{ .Release.Namespace }}
+spec:
+  provider:
+    type: prometheus
+    address: {{ .Values.canary.analysis.prometheus.address }}
+  query: {{ .Values.canary.analysis.metrics.p90Latency.query }} 
+   

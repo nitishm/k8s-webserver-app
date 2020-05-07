@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace : {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+    spec:
+      containers:
+      - name: {{ .Values.webserver.container.name }}
+        imagePullPolicy: Always
+        {{- if ne .Values.webserver.container.repository "" }}
+        image: {{ .Values.webserver.container.repository }}/{{ .Values.webserver.container.image }}:{{ .Values.webserver.container.version | replace "." "-"}}
+        {{- else }}
+        image: {{ .Values.webserver.container.image }}:{{ .Values.webserver.container.version }}
+        {{- end }}
+        resources:
+          limits:
+            memory: {{ .Values.webserver.resources.limits.memory }}
+            cpu: {{ .Values.webserver.resources.limits.cpu }}
+        ports:
+        - containerPort: {{ .Values.webserver.container.port }}
+          name: {{ .Values.webserver.container.portName }}
+        livenessProbe:
+          httpGet:
+            path: "/healthz"
+            port: {{ .Values.webserver.container.port }}
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: "/healthz"
+            port: {{ .Values.webserver.container.port }}
+          failureThreshold: 5

@@ -1,0 +1,7 @@
+apiVersion: v2
+name: webserver
+version: v1.0.0
+maintainers: # 
+  - name: Nitish Malhotra
+    email: nitish.malhotra@gmail.com
+appVersion: v1.0.0
