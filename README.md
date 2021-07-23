@@ -13,3 +13,7 @@ This demo application is used to demonstrate Continuous Delivery using [ArgoCD](
 - **Remaining** - Contain source code for the application and Dockerfile for webserver container image generation.
 
 *...more content to come...*
+
+> Use prometheus query for error rate
+>
+> sum(rate(webserver_errors{instance="10.244.3.12:8081"}[5m]))/sum(rate(webserver_requests{instance="10.244.3.12:8081"}[5m])) *100

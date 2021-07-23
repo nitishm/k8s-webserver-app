@@ -11,9 +11,21 @@ spec:
     metadata:
       labels:
         app: {{ .Values.appName }}
+      annotations:
+        "prometheus.io/scrape": 'true'
+        "prometheus.io/port": '{{ .Values.webserver.prometheus.port }}'
     spec:
       containers:
       - name: {{ .Values.webserver.container.name }}
+        command: 
+        - {{ .Values.webserver.container.command }}
+        args: 
+        {{- if .Values.webserver.errors.enabled }}
+        - --error-rate={{ .Values.webserver.errors.percentage }}
+        {{- end }}
+        {{- if .Values.webserver.delay.enabled }}
+        - --delay={{ .Values.webserver.delay.milliseconds }}
+        {{- end }}
         imagePullPolicy: Always
         {{- if ne .Values.webserver.container.repository "" }}
         image: {{ .Values.webserver.container.repository }}/{{ .Values.webserver.container.image }}:{{ .Values.webserver.container.version | replace "." "-"}}

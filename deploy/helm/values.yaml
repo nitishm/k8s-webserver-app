@@ -8,18 +8,27 @@ hpa:
 
 webserver:
   container:
+    command: "./bin/webserver"
     image: nmalhotr/webserver
     version: v1.0.0
     name: webserver
     repository: ""
     port: 8080
     portName: http-server
+  prometheus:
+    port: 8081
+    portName: prom-server
   service:
     host: webserver.com
     port: 80
     portName: http-server
-    nodePort: 32220
-    type: NodePort
+    type: LoadBalancer
+  errors:
+    enabled: false
+    percentage: 50
+  delay:
+    enabled: false
+    milliseconds: 500
 
   resources:
     limits:
